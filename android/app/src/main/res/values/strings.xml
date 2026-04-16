@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">CloudHealth</string>
+    <string name="title_activity_main">CloudHealth</string>
+    <string name="package_name">com.cloudhealth.app</string>
+    <string name="custom_url_scheme">com.cloudhealth.app</string>
+</resources>

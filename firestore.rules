@@ -1,0 +1,158 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "abuqitmirshirazalmadani@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(data) {
+      return hasRequiredFields(['uid', 'name', 'email', 'role', 'createdAt']) &&
+             data.uid is string && data.uid.size() > 0 && data.uid.size() < 100 &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.email is string && isValidEmail(data.email) && data.email.size() < 100 &&
+             data.role in ['patient', 'doctor', 'admin'] &&
+             data.createdAt is string &&
+             (!('medicalHistory' in data) || (data.medicalHistory is list && data.medicalHistory.size() <= 100)) &&
+             (!('allergies' in data) || (data.allergies is list && data.allergies.size() <= 50)) &&
+             (!('emergencyContacts' in data) || (data.emergencyContacts is list && data.emergencyContacts.size() <= 5));
+    }
+
+    function isValidRecord(data) {
+      return hasRequiredFields(['userId', 'type', 'title', 'date', 'createdAt']) &&
+             data.userId is string && data.userId.size() > 0 && data.userId.size() < 100 &&
+             data.type in ['lab_report', 'prescription', 'doctor_note'] &&
+             data.title is string && data.title.size() > 0 && data.title.size() < 200 &&
+             data.date is string &&
+             data.createdAt is string &&
+             (!('content' in data) || (data.content is string && data.content.size() < 1000000)); // 1MB max
+    }
+
+    function isValidAppointment(data) {
+      return hasRequiredFields(['patientId', 'doctorId', 'doctorName', 'date', 'status', 'type', 'createdAt']) &&
+             data.patientId is string && data.patientId.size() > 0 && data.patientId.size() < 100 &&
+             data.doctorId is string && data.doctorId.size() > 0 && data.doctorId.size() < 100 &&
+             data.doctorName is string && data.doctorName.size() > 0 && data.doctorName.size() < 100 &&
+             data.date is string &&
+             data.status in ['scheduled', 'completed', 'cancelled'] &&
+             data.type in ['in_person', 'video'] &&
+             data.createdAt is string &&
+             (!('notes' in data) || (data.notes is string && data.notes.size() < 5000));
+    }
+
+    function isValidMedication(data) {
+      return hasRequiredFields(['userId', 'name', 'dosage', 'frequency', 'active', 'createdAt']) &&
+             data.userId is string && data.userId.size() > 0 && data.userId.size() < 100 &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 200 &&
+             data.dosage is string && data.dosage.size() > 0 && data.dosage.size() < 100 &&
+             data.frequency is string && data.frequency.size() > 0 && data.frequency.size() < 100 &&
+             data.active is bool &&
+             data.createdAt is string &&
+             (!('timeOfDay' in data) || (data.timeOfDay is list && data.timeOfDay.size() <= 10)) &&
+             (!('startDate' in data) || data.startDate is string) &&
+             (!('endDate' in data) || data.endDate is string);
+    }
+
+    function isValidMetric(data) {
+      return hasRequiredFields(['userId', 'date', 'createdAt']) &&
+             data.userId is string && data.userId.size() > 0 && data.userId.size() < 100 &&
+             data.date is string &&
+             data.createdAt is string &&
+             (!('heartRate' in data) || (data.heartRate is number && data.heartRate >= 0 && data.heartRate <= 300)) &&
+             (!('steps' in data) || (data.steps is number && data.steps >= 0 && data.steps <= 200000)) &&
+             (!('sleepHours' in data) || (data.sleepHours is number && data.sleepHours >= 0 && data.sleepHours <= 24)) &&
+             (!('systolicBP' in data) || (data.systolicBP is number && data.systolicBP >= 0 && data.systolicBP <= 300)) &&
+             (!('diastolicBP' in data) || (data.diastolicBP is number && data.diastolicBP >= 0 && data.diastolicBP <= 200));
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isAuthenticated() && isValidUser(request.resource.data) && 
+                    ((isOwner(userId) && request.resource.data.role == 'patient') || isAdmin()) &&
+                    request.resource.data.uid == userId;
+      allow update: if isAuthenticated() && isValidUser(request.resource.data) &&
+                    ((isOwner(userId) && request.resource.data.role == resource.data.role) || isAdmin()) &&
+                    request.resource.data.uid == resource.data.uid &&
+                    request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isAdmin();
+    }
+
+    match /records/{recordId} {
+      allow read: if isAuthenticated() && (isOwner(resource.data.userId) || isAdmin());
+      allow create: if isAuthenticated() && isValidRecord(request.resource.data) && 
+                    (isOwner(request.resource.data.userId) || isAdmin());
+      allow update: if isAuthenticated() && isValidRecord(request.resource.data) &&
+                    (isOwner(resource.data.userId) || isAdmin()) &&
+                    request.resource.data.userId == resource.data.userId &&
+                    request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isAuthenticated() && (isOwner(resource.data.userId) || isAdmin());
+    }
+
+    match /appointments/{appointmentId} {
+      allow read: if isAuthenticated() && (isOwner(resource.data.patientId) || isOwner(resource.data.doctorId) || isAdmin());
+      allow create: if isAuthenticated() && isValidAppointment(request.resource.data) && 
+                    (isOwner(request.resource.data.patientId) || isOwner(request.resource.data.doctorId) || isAdmin());
+      allow update: if isAuthenticated() && isValidAppointment(request.resource.data) &&
+                    (isOwner(resource.data.patientId) || isOwner(resource.data.doctorId) || isAdmin()) &&
+                    request.resource.data.patientId == resource.data.patientId &&
+                    request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isAuthenticated() && (isOwner(resource.data.patientId) || isOwner(resource.data.doctorId) || isAdmin());
+    }
+
+    match /medications/{medicationId} {
+      allow read: if isAuthenticated() && (isOwner(resource.data.userId) || isAdmin());
+      allow create: if isAuthenticated() && isValidMedication(request.resource.data) && 
+                    (isOwner(request.resource.data.userId) || isAdmin());
+      allow update: if isAuthenticated() && isValidMedication(request.resource.data) &&
+                    (isOwner(resource.data.userId) || isAdmin()) &&
+                    request.resource.data.userId == resource.data.userId &&
+                    request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isAuthenticated() && (isOwner(resource.data.userId) || isAdmin());
+    }
+
+    match /metrics/{metricId} {
+      allow read: if isAuthenticated() && (isOwner(resource.data.userId) || isAdmin());
+      allow create: if isAuthenticated() && isValidMetric(request.resource.data) && 
+                    (isOwner(request.resource.data.userId) || isAdmin());
+      allow update: if isAuthenticated() && isValidMetric(request.resource.data) &&
+                    (isOwner(resource.data.userId) || isAdmin()) &&
+                    request.resource.data.userId == resource.data.userId &&
+                    request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isAuthenticated() && (isOwner(resource.data.userId) || isAdmin());
+    }
+  }
+}

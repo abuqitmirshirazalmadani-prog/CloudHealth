@@ -1,0 +1,5 @@
+{
+	"appId": "com.cloudhealth.app",
+	"appName": "CloudHealth",
+	"webDir": "dist/app/browser"
+}

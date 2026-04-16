@@ -1,0 +1,115 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User's personal and medical profile",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "User ID" },
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "medicalHistory": { "type": "array", "items": { "type": "string" } },
+        "allergies": { "type": "array", "items": { "type": "string" } },
+        "emergencyContacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "phone": { "type": "string" },
+              "relation": { "type": "string" }
+            }
+          }
+        },
+        "role": { "type": "string", "enum": ["patient", "doctor", "admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "name", "email", "role", "createdAt"]
+    },
+    "HealthRecord": {
+      "title": "HealthRecord",
+      "description": "Lab reports, prescriptions, doctor notes",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "type": { "type": "string", "enum": ["lab_report", "prescription", "doctor_note"] },
+        "title": { "type": "string" },
+        "content": { "type": "string", "description": "Text or base64 encoded image" },
+        "date": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "type", "title", "date", "createdAt"]
+    },
+    "Appointment": {
+      "title": "Appointment",
+      "description": "Doctor booking",
+      "type": "object",
+      "properties": {
+        "patientId": { "type": "string" },
+        "doctorId": { "type": "string" },
+        "doctorName": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["scheduled", "completed", "cancelled"] },
+        "type": { "type": "string", "enum": ["in_person", "video"] },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["patientId", "doctorId", "doctorName", "date", "status", "type", "createdAt"]
+    },
+    "Medication": {
+      "title": "Medication",
+      "description": "Medication tracker",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "dosage": { "type": "string" },
+        "frequency": { "type": "string" },
+        "timeOfDay": { "type": "array", "items": { "type": "string" } },
+        "startDate": { "type": "string", "format": "date-time" },
+        "endDate": { "type": "string", "format": "date-time" },
+        "active": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "name", "dosage", "frequency", "active", "createdAt"]
+    },
+    "HealthMetric": {
+      "title": "HealthMetric",
+      "description": "Daily health tracking",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" },
+        "heartRate": { "type": "number" },
+        "steps": { "type": "number" },
+        "sleepHours": { "type": "number" },
+        "systolicBP": { "type": "number" },
+        "diastolicBP": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "date", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "User profiles"
+    },
+    "/records/{recordId}": {
+      "schema": { "$ref": "#/entities/HealthRecord" },
+      "description": "Health records"
+    },
+    "/appointments/{appointmentId}": {
+      "schema": { "$ref": "#/entities/Appointment" },
+      "description": "Appointments"
+    },
+    "/medications/{medicationId}": {
+      "schema": { "$ref": "#/entities/Medication" },
+      "description": "Medications"
+    },
+    "/metrics/{metricId}": {
+      "schema": { "$ref": "#/entities/HealthMetric" },
+      "description": "Health metrics"
+    }
+  }
+}
