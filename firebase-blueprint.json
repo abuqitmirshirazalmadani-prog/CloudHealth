@@ -22,6 +22,9 @@
           }
         },
         "role": { "type": "string", "enum": ["patient", "doctor", "admin"] },
+        "height": { "type": "string" },
+        "weight": { "type": "string" },
+        "bloodType": { "type": "string" },
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["uid", "name", "email", "role", "createdAt"]

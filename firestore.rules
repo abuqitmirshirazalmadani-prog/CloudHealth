@@ -43,6 +43,9 @@ service cloud.firestore {
              data.email is string && isValidEmail(data.email) && data.email.size() < 100 &&
              data.role in ['patient', 'doctor', 'admin'] &&
              data.createdAt is string &&
+             (!('height' in data) || (data.height is string && data.height.size() < 50)) &&
+             (!('weight' in data) || (data.weight is string && data.weight.size() < 50)) &&
+             (!('bloodType' in data) || (data.bloodType is string && data.bloodType.size() < 10)) &&
              (!('medicalHistory' in data) || (data.medicalHistory is list && data.medicalHistory.size() <= 100)) &&
              (!('allergies' in data) || (data.allergies is list && data.allergies.size() <= 50)) &&
              (!('emergencyContacts' in data) || (data.emergencyContacts is list && data.emergencyContacts.size() <= 5));
