@@ -1,8 +1,9 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { auth, googleProvider } from '../firebase';
 import { signInWithPopup, signOut, User, onAuthStateChanged, signInWithCredential, GoogleAuthProvider } from 'firebase/auth';
 import { Capacitor } from '@capacitor/core';
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -10,11 +11,15 @@ import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 export class AuthService {
   currentUser = signal<User | null>(null);
   isAuthReady = signal<boolean>(false);
+  private router = inject(Router);
 
   constructor() {
     onAuthStateChanged(auth, (user) => {
       this.currentUser.set(user);
       this.isAuthReady.set(true);
+      if (!user) {
+        this.router.navigate(['/login']);
+      }
     });
   }
 
@@ -41,6 +46,7 @@ export class AuthService {
         await FirebaseAuthentication.signOut();
       }
       await signOut(auth);
+      this.router.navigate(['/login']);
     } catch (error) {
       console.error('Logout failed', error);
     }

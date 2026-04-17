@@ -12,27 +12,37 @@ import { TermsComponent } from './pages/terms.component';
 import { inject } from '@angular/core';
 import { AuthService } from './auth.service';
 import { Router } from '@angular/router';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { filter, map } from 'rxjs/operators';
 
 const authGuard = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
   
-  if (authService.isAuthReady() && !authService.currentUser()) {
-    router.navigate(['/login']);
-    return false;
-  }
-  return true;
+  return toObservable(authService.isAuthReady).pipe(
+    filter(isReady => isReady),
+    map(() => {
+      if (!authService.currentUser()) {
+        return router.parseUrl('/login');
+      }
+      return true;
+    })
+  );
 };
 
 const loginGuard = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
   
-  if (authService.isAuthReady() && authService.currentUser()) {
-    router.navigate(['/dashboard']);
-    return false;
-  }
-  return true;
+  return toObservable(authService.isAuthReady).pipe(
+    filter(isReady => isReady),
+    map(() => {
+      if (authService.currentUser()) {
+        return router.parseUrl('/dashboard');
+      }
+      return true;
+    })
+  );
 };
 
 export const routes: Routes = [
