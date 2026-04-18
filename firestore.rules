@@ -58,6 +58,7 @@ service cloud.firestore {
              data.title is string && data.title.size() > 0 && data.title.size() < 200 &&
              data.date is string &&
              data.createdAt is string &&
+             (!('fileUrl' in data) || (data.fileUrl is string && data.fileUrl.size() < 1000000)) &&
              (!('content' in data) || (data.content is string && data.content.size() < 1000000)); // 1MB max
     }
 

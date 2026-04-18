@@ -175,9 +175,9 @@ export class RecordsComponent {
       return;
     }
 
-    // 5MB limit for Firebase Storage
-    if (file.size > 5 * 1024 * 1024) {
-      this.fileError.set('File is too large. Please select a file under 5MB.');
+    // 500KB limit to safely fit inside Firestore's 1MB document limit
+    if (file.size > 500 * 1024) {
+      this.fileError.set('File is too large. Please select a file under 500KB.');
       this.selectedFile.set(null);
       this.fileDataUrl.set(null);
       return;
@@ -199,11 +199,8 @@ export class RecordsComponent {
     let fileUrl = '';
     const file = this.selectedFile();
     if (file) {
-      const { storage } = await import('../../firebase');
-      const { ref, uploadBytes, getDownloadURL } = await import('firebase/storage');
-      const fileRef = ref(storage, `records/${userId}/${crypto.randomUUID()}_${file.name}`);
-      await uploadBytes(fileRef, file);
-      fileUrl = await getDownloadURL(fileRef);
+      // Use the local base64 DataURL and inject directly into Firestore rather than an external storage bucket
+      fileUrl = this.fileDataUrl() || '';
     }
 
     await this.dataService.addRecord({
@@ -211,7 +208,7 @@ export class RecordsComponent {
       title: this.newRecord.title,
       type: this.newRecord.type as any,
       date: new Date(this.newRecord.date).toISOString(),
-      fileUrl: fileUrl || this.fileDataUrl() || ''
+      fileUrl: fileUrl
     });
 
     this.showAddModal.set(false);
