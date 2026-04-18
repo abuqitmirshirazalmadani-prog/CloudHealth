@@ -2,6 +2,9 @@ package com.cloudhealth.app;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.webkit.CookieManager;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import androidx.appcompat.app.AlertDialog;
@@ -20,9 +23,25 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main); 
 
         // Webview stuff 
-        webview = findViewById(R.id.webView); 
-        webview.getSettings().setJavaScriptEnabled(true); 
-        webview.getSettings().setDomStorageEnabled(true); 
+        webview = findViewById(R.id.webView);
+        
+        // --- CRITICAL SETTINGS FOR MODERN JS & FIREBASE ---
+        WebSettings settings = webview.getSettings();
+        settings.setJavaScriptEnabled(true); 
+        settings.setDomStorageEnabled(true); 
+        settings.setDatabaseEnabled(true);
+        settings.setAllowFileAccess(true);
+        settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        
+        // Required for JS execution, routing logic, and multiple windows/alerts to work
+        webview.setWebChromeClient(new WebChromeClient());
+        
+        // Firebase Auth strictly requires cross-context cookies to maintain its session state
+        CookieManager cookieManager = CookieManager.getInstance();
+        cookieManager.setAcceptCookie(true);
+        cookieManager.setAcceptThirdPartyCookies(webview, true);
+        // ------------------------------------------------
+
         webview.setOverScrollMode(WebView.OVER_SCROLL_NEVER); 
         webview.loadUrl(websiteURL); 
         webview.setWebViewClient(new WebViewClientDemo()); 

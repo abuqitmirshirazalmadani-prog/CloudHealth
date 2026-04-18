@@ -1,6 +1,7 @@
 {
-  "name": "ai-studio-angular-app",
-  "version": "0.0.0",
+  "name": "cloudhealth-desktop",
+  "version": "1.0.0",
+  "main": "main.js",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -8,9 +9,21 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "build:msi": "electron-builder --win msi"
   },
   "private": true,
+  "build": {
+    "appId": "com.cloudhealth.app",
+    "productName": "CloudHealth",
+    "win": {
+      "target": "msi"
+    },
+    "msi": {
+      "oneClick": true,
+      "perMachine": false
+    }
+  },
   "dependencies": {
     "@angular/cdk": "^21.0.0",
     "@angular/common": "^21.0.0",
