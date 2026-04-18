@@ -1,30 +1,30 @@
 import { Injectable } from '@angular/core';
+import { GoogleGenAI } from '@google/genai';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AiService {
-  constructor() {}
+  private ai: GoogleGenAI;
+
+  constructor() {
+    // Requires GEMINI_API_KEY exposed by Angular Build
+    // Ensure you add GEMINI_API_KEY to your Vercel Environment Variables
+    const apiKey = typeof GEMINI_API_KEY !== 'undefined' ? GEMINI_API_KEY : '';
+    this.ai = new GoogleGenAI({ apiKey: apiKey });
+  }
 
   async getHealthGuidance(prompt: string): Promise<string> {
     try {
-      const response = await fetch('/api/ai/guidance', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ prompt })
+      const response = await this.ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: prompt,
       });
       
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      
-      const data = await response.json();
-      return data.text || 'I am unable to provide guidance at this time.';
+      return response.text || 'I am unable to provide guidance at this time.';
     } catch (error) {
       console.error('AI Error:', error);
-      return 'Sorry, I encountered an error while processing your request.';
+      return 'Sorry, I encountered an error while processing your request. Please check your API key configuration.';
     }
   }
 }
