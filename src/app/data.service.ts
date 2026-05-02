@@ -1,7 +1,66 @@
 import { Injectable, inject, signal, effect } from '@angular/core';
 import { db, handleFirestoreError, OperationType } from '../firebase';
-import { collection, doc, onSnapshot, setDoc, updateDoc, deleteDoc, query, where, orderBy, serverTimestamp, getDoc } from 'firebase/firestore';
+import { collection, doc, onSnapshot, setDoc, updateDoc, query, where, orderBy } from 'firebase/firestore';
 import { AuthService } from './auth.service';
+
+export interface EmergencyContact {
+  name?: string;
+  relation?: string;
+  phone?: string;
+}
+
+export interface UserProfile {
+  id: string; // id is usually always present when requested
+  uid?: string;
+  name?: string;
+  email?: string;
+  role?: string;
+  height?: string;
+  weight?: string;
+  bloodType?: string;
+  medicalHistory?: string[];
+  allergies?: string[];
+  emergencyContacts?: EmergencyContact[];
+}
+
+export interface HealthRecord {
+  id: string;
+  userId?: string;
+  title?: string;
+  type?: string;
+  date?: string;
+  fileUrl?: string;
+}
+
+export interface Appointment {
+  id: string;
+  userId?: string;
+  doctorName?: string;
+  date?: string;
+  type?: string;
+  status?: string;
+}
+
+export interface Medication {
+  id: string;
+  userId?: string;
+  name?: string;
+  dosage?: string;
+  frequency?: string;
+  active?: boolean;
+  timeOfDay?: string[];
+}
+
+export interface Metric {
+  id: string;
+  userId?: string;
+  date?: string;
+  heartRate?: number | null;
+  steps?: number | null;
+  systolicBP?: number | null;
+  diastolicBP?: number | null;
+  sleepHours?: number | null;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -9,11 +68,11 @@ import { AuthService } from './auth.service';
 export class DataService {
   private authService = inject(AuthService);
 
-  userProfile = signal<any>(null);
-  records = signal<any[]>([]);
-  appointments = signal<any[]>([]);
-  medications = signal<any[]>([]);
-  metrics = signal<any[]>([]);
+  userProfile = signal<UserProfile | null>(null);
+  records = signal<HealthRecord[]>([]);
+  appointments = signal<Appointment[]>([]);
+  medications = signal<Medication[]>([]);
+  metrics = signal<Metric[]>([]);
 
   private unsubscribes: (() => void)[] = [];
 
@@ -106,7 +165,7 @@ export class DataService {
     }
   }
 
-  async updateUserProfile(userId: string, data: any) {
+  async updateUserProfile(userId: string, data: Record<string, unknown>) {
     try {
       await updateDoc(doc(db, 'users', userId), data);
     } catch (error) {
@@ -114,7 +173,7 @@ export class DataService {
     }
   }
 
-  async addRecord(data: any) {
+  async addRecord(data: Record<string, unknown>) {
     try {
       const id = crypto.randomUUID();
       const now = new Date().toISOString();
@@ -124,7 +183,7 @@ export class DataService {
     }
   }
 
-  async addAppointment(data: any) {
+  async addAppointment(data: Record<string, unknown>) {
     try {
       const id = crypto.randomUUID();
       const now = new Date().toISOString();
@@ -134,7 +193,7 @@ export class DataService {
     }
   }
 
-  async addMedication(data: any) {
+  async addMedication(data: Record<string, unknown>) {
     try {
       const id = crypto.randomUUID();
       const now = new Date().toISOString();
@@ -144,7 +203,7 @@ export class DataService {
     }
   }
 
-  async updateMedication(id: string, data: any) {
+  async updateMedication(id: string, data: Record<string, unknown>) {
     try {
       await updateDoc(doc(db, 'medications', id), data);
     } catch (error) {
@@ -152,7 +211,7 @@ export class DataService {
     }
   }
 
-  async addMetric(data: any) {
+  async addMetric(data: Record<string, unknown>) {
     try {
       const id = crypto.randomUUID();
       const now = new Date().toISOString();

@@ -26,15 +26,15 @@ import { FormsModule } from '@angular/forms';
           <section class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
             <div class="flex items-center gap-6 mb-6">
               <div class="w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl font-semibold">
-                {{ dataService.userProfile().name.charAt(0) }}
+                {{ dataService.userProfile()?.name?.charAt(0) }}
               </div>
               <div>
-                <h2 class="text-xl font-semibold text-slate-800">{{ dataService.userProfile().name }}</h2>
-                <p class="text-slate-500">{{ dataService.userProfile().email }}</p>
-                <p class="text-slate-500 mt-1">Height: {{ dataService.userProfile().height || 'N/A' }}, Weight: {{ dataService.userProfile().weight || 'N/A' }}</p>
-                <p class="text-slate-500">Blood Type: {{ dataService.userProfile().bloodType || 'N/A' }}</p>
+                <h2 class="text-xl font-semibold text-slate-800">{{ dataService.userProfile()?.name }}</h2>
+                <p class="text-slate-500">{{ dataService.userProfile()?.email }}</p>
+                <p class="text-slate-500 mt-1">Height: {{ dataService.userProfile()?.height || 'N/A' }}, Weight: {{ dataService.userProfile()?.weight || 'N/A' }}</p>
+                <p class="text-slate-500">Blood Type: {{ dataService.userProfile()?.bloodType || 'N/A' }}</p>
                 <div class="mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 text-xs font-medium uppercase tracking-wider">
-                  {{ dataService.userProfile().role }}
+                  {{ dataService.userProfile()?.role }}
                 </div>
               </div>
             </div>
@@ -53,7 +53,7 @@ import { FormsModule } from '@angular/forms';
             </div>
             
             <div class="flex flex-wrap gap-2">
-              @for (item of dataService.userProfile().medicalHistory; track item) {
+              @for (item of dataService.userProfile()?.medicalHistory; track item) {
                 <div class="bg-slate-50 border border-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-sm flex items-center gap-2">
                   {{ item }}
                   <button (click)="removeMedicalHistory(item)" class="text-slate-400 hover:text-red-500 cursor-pointer"><mat-icon class="text-[16px] w-4 h-4">close</mat-icon></button>
@@ -77,7 +77,7 @@ import { FormsModule } from '@angular/forms';
             </div>
             
             <div class="flex flex-wrap gap-2">
-              @for (item of dataService.userProfile().allergies; track item) {
+              @for (item of dataService.userProfile()?.allergies; track item) {
                 <div class="bg-orange-50 border border-orange-100 text-orange-800 px-3 py-1.5 rounded-lg text-sm flex items-center gap-2">
                   {{ item }}
                   <button (click)="removeAllergy(item)" class="text-orange-400 hover:text-red-500 cursor-pointer"><mat-icon class="text-[16px] w-4 h-4">close</mat-icon></button>
@@ -101,7 +101,7 @@ import { FormsModule } from '@angular/forms';
             </div>
             
             <div class="space-y-3">
-              @for (contact of dataService.userProfile().emergencyContacts; track contact.phone) {
+              @for (contact of dataService.userProfile()?.emergencyContacts; track contact.phone) {
                 <div class="flex items-center justify-between p-4 rounded-2xl border border-slate-100">
                   <div>
                     <h4 class="font-medium text-slate-800">{{ contact.name }}</h4>
@@ -125,8 +125,8 @@ import { FormsModule } from '@angular/forms';
               <h2 class="text-xl font-semibold mb-4 text-slate-800">Add Medical History</h2>
               <div class="space-y-4">
                 <div>
-                  <label class="block text-sm font-medium text-slate-700 mb-1">Condition / Surgery</label>
-                  <input type="text" [(ngModel)]="newMedicalHistory" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="e.g. Appendectomy (2015)">
+                  <label for="medHistoryInput" class="block text-sm font-medium text-slate-700 mb-1">Condition / Surgery</label>
+                  <input id="medHistoryInput" type="text" [(ngModel)]="newMedicalHistory" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="e.g. Appendectomy (2015)">
                 </div>
               </div>
               <div class="flex justify-end gap-3 mt-8">
@@ -143,8 +143,8 @@ import { FormsModule } from '@angular/forms';
               <h2 class="text-xl font-semibold mb-4 text-slate-800">Add Allergy</h2>
               <div class="space-y-4">
                 <div>
-                  <label class="block text-sm font-medium text-slate-700 mb-1">Allergy</label>
-                  <input type="text" [(ngModel)]="newAllergy" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="e.g. Penicillin">
+                  <label for="allergyInput" class="block text-sm font-medium text-slate-700 mb-1">Allergy</label>
+                  <input id="allergyInput" type="text" [(ngModel)]="newAllergy" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="e.g. Penicillin">
                 </div>
               </div>
               <div class="flex justify-end gap-3 mt-8">
@@ -161,16 +161,16 @@ import { FormsModule } from '@angular/forms';
               <h2 class="text-xl font-semibold mb-4 text-slate-800">Add Emergency Contact</h2>
               <div class="space-y-4">
                 <div>
-                  <label class="block text-sm font-medium text-slate-700 mb-1">Name</label>
-                  <input type="text" [(ngModel)]="newEmergencyContact.name" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="e.g. Jane Doe">
+                  <label for="ecNameInput" class="block text-sm font-medium text-slate-700 mb-1">Name</label>
+                  <input id="ecNameInput" type="text" [(ngModel)]="newEmergencyContact.name" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="e.g. Jane Doe">
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-slate-700 mb-1">Relation</label>
-                  <input type="text" [(ngModel)]="newEmergencyContact.relation" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="e.g. Spouse">
+                  <label for="ecRelationInput" class="block text-sm font-medium text-slate-700 mb-1">Relation</label>
+                  <input id="ecRelationInput" type="text" [(ngModel)]="newEmergencyContact.relation" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="e.g. Spouse">
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-slate-700 mb-1">Phone Number</label>
-                  <input type="tel" [(ngModel)]="newEmergencyContact.phone" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="e.g. +1 555-0123">
+                  <label for="ecPhoneInput" class="block text-sm font-medium text-slate-700 mb-1">Phone Number</label>
+                  <input id="ecPhoneInput" type="tel" [(ngModel)]="newEmergencyContact.phone" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="e.g. +1 555-0123">
                 </div>
               </div>
               <div class="flex justify-end gap-3 mt-8">
@@ -219,20 +219,20 @@ import { FormsModule } from '@angular/forms';
               <h2 class="text-xl font-semibold mb-4 text-slate-800">Edit Profile</h2>
               <div class="space-y-4">
                 <div>
-                  <label class="block text-sm font-medium text-slate-700 mb-1">Name</label>
-                  <input type="text" [(ngModel)]="editProfileData.name" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                  <label for="editNameInput" class="block text-sm font-medium text-slate-700 mb-1">Name</label>
+                  <input id="editNameInput" type="text" [(ngModel)]="editProfileData.name" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-slate-700 mb-1">Height</label>
-                  <input type="text" [(ngModel)]="editProfileData.height" placeholder="e.g. 5'10&quot; or 178 cm" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                  <label for="editHeightInput" class="block text-sm font-medium text-slate-700 mb-1">Height</label>
+                  <input id="editHeightInput" type="text" [(ngModel)]="editProfileData.height" placeholder="e.g. 5'10&quot; or 178 cm" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-slate-700 mb-1">Weight</label>
-                  <input type="text" [(ngModel)]="editProfileData.weight" placeholder="e.g. 160 lbs or 72 kg" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                  <label for="editWeightInput" class="block text-sm font-medium text-slate-700 mb-1">Weight</label>
+                  <input id="editWeightInput" type="text" [(ngModel)]="editProfileData.weight" placeholder="e.g. 160 lbs or 72 kg" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-slate-700 mb-1">Blood Type</label>
-                  <input type="text" [(ngModel)]="editProfileData.bloodType" placeholder="e.g. O+, A-, etc." class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                  <label for="editBloodInput" class="block text-sm font-medium text-slate-700 mb-1">Blood Type</label>
+                  <input id="editBloodInput" type="text" [(ngModel)]="editProfileData.bloodType" placeholder="e.g. O+, A-, etc." class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                 </div>
               </div>
               <div class="flex justify-end gap-3 mt-8">
@@ -360,11 +360,11 @@ export class ProfileComponent {
     this.showEmergencyContactModal.set(false);
   }
 
-  async removeEmergencyContact(contact: any) {
+  async removeEmergencyContact(contact: import('../data.service').EmergencyContact) {
     const profile = this.dataService.userProfile();
     if (!profile) return;
 
-    const updatedContacts = (profile.emergencyContacts || []).filter((c: any) => c.phone !== contact.phone || c.name !== contact.name);
+    const updatedContacts = (profile.emergencyContacts || []).filter((c) => c.phone !== contact.phone || c.name !== contact.name);
     await this.dataService.updateUserProfile(profile.id, { emergencyContacts: updatedContacts });
   }
 }

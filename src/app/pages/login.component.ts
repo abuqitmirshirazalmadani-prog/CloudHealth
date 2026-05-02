@@ -67,10 +67,11 @@ export class LoginComponent {
     try {
       await this.authService.loginWithGoogle();
       this.router.navigate(['/dashboard']);
-    } catch (err: any) {
-      const errorMessage = err?.message || String(err);
-      if (err?.code === 'auth/cancelled-popup-request' || 
-          err?.code === 'auth/popup-closed-by-user' ||
+    } catch (err: unknown) {
+      const errorObj = err as { code?: string; message?: string };
+      const errorMessage = errorObj?.message || String(err);
+      if (errorObj?.code === 'auth/cancelled-popup-request' || 
+          errorObj?.code === 'auth/popup-closed-by-user' ||
           errorMessage.includes('popup-closed-by-user') ||
           errorMessage.includes('INTERNAL ASSERTION FAILED')) {
         this.error.set('Login popup was blocked or closed. If you are viewing this inside the AI Studio preview, please click the "Open in new tab" button (↗️) at the top right of the preview window and try again.');

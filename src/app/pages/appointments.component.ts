@@ -27,16 +27,16 @@ import { FormsModule } from '@angular/forms';
             <h2 class="text-xl font-semibold mb-4 text-slate-800">Book Appointment</h2>
             <div class="space-y-4">
               <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Doctor Name</label>
-                <input type="text" [(ngModel)]="newAppt.doctorName" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="e.g. Dr. Smith">
+                <label for="doctorNameInput" class="block text-sm font-medium text-slate-700 mb-1">Doctor Name</label>
+                <input id="doctorNameInput" type="text" [(ngModel)]="newAppt.doctorName" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="e.g. Dr. Smith">
               </div>
               <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Date & Time</label>
-                <input type="datetime-local" [(ngModel)]="newAppt.date" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <label for="apptDateInput" class="block text-sm font-medium text-slate-700 mb-1">Date & Time</label>
+                <input id="apptDateInput" type="datetime-local" [(ngModel)]="newAppt.date" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
               </div>
               <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Visit Type</label>
-                <select [(ngModel)]="newAppt.type" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+                <label for="apptTypeSelect" class="block text-sm font-medium text-slate-700 mb-1">Visit Type</label>
+                <select id="apptTypeSelect" [(ngModel)]="newAppt.type" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
                   <option value="in_person">In-Person Visit</option>
                   <option value="video">Video Consultation</option>
                 </select>

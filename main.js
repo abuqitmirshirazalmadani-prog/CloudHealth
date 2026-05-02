@@ -11,8 +11,9 @@ function createWindow() {
     }
   });
 
-  // Load your deployed Vercel application
-  win.loadURL('https://cloud-health-khaki.vercel.app/login');
+  const path = require('path');
+  // Load the local Angular build
+  win.loadFile(path.join(__dirname, 'dist/app/browser/index.html'));
 
   // Critical: For Google Authentication to work securely in a desktop app,
   // we must open external OAuth popups in the user's default system web browser.

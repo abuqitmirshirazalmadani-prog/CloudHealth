@@ -43,24 +43,24 @@ import { FormsModule } from '@angular/forms';
             <div class="space-y-4">
               <div class="grid grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-sm font-medium text-slate-700 mb-1">Heart Rate (bpm)</label>
-                  <input type="number" [(ngModel)]="newMetric.heartRate" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                  <label for="hrInput" class="block text-sm font-medium text-slate-700 mb-1">Heart Rate (bpm)</label>
+                  <input id="hrInput" type="number" [(ngModel)]="newMetric.heartRate" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-slate-700 mb-1">Steps</label>
-                  <input type="number" [(ngModel)]="newMetric.steps" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                  <label for="stepInput" class="block text-sm font-medium text-slate-700 mb-1">Steps</label>
+                  <input id="stepInput" type="number" [(ngModel)]="newMetric.steps" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-slate-700 mb-1">Systolic BP</label>
-                  <input type="number" [(ngModel)]="newMetric.systolicBP" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                  <label for="sysBPInput" class="block text-sm font-medium text-slate-700 mb-1">Systolic BP</label>
+                  <input id="sysBPInput" type="number" [(ngModel)]="newMetric.systolicBP" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-slate-700 mb-1">Diastolic BP</label>
-                  <input type="number" [(ngModel)]="newMetric.diastolicBP" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                  <label for="diaBPInput" class="block text-sm font-medium text-slate-700 mb-1">Diastolic BP</label>
+                  <input id="diaBPInput" type="number" [(ngModel)]="newMetric.diastolicBP" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                 </div>
                 <div class="col-span-2">
-                  <label class="block text-sm font-medium text-slate-700 mb-1">Sleep (Hours)</label>
-                  <input type="number" [(ngModel)]="newMetric.sleepHours" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                  <label for="sleepInput" class="block text-sm font-medium text-slate-700 mb-1">Sleep (Hours)</label>
+                  <input id="sleepInput" type="number" [(ngModel)]="newMetric.sleepHours" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                 </div>
               </div>
             </div>
@@ -89,26 +89,26 @@ import { FormsModule } from '@angular/forms';
                 <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
                   <div class="text-slate-500 text-xs font-medium uppercase tracking-wider mb-1">Heart Rate</div>
                   <div class="flex items-baseline gap-1">
-                    <span class="text-2xl font-bold text-slate-800">{{ latestMetric().heartRate || '--' }}</span>
+                    <span class="text-2xl font-bold text-slate-800">{{ latestMetric()?.heartRate || '--' }}</span>
                     <span class="text-sm text-slate-500">bpm</span>
                   </div>
                 </div>
                 <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
                   <div class="text-slate-500 text-xs font-medium uppercase tracking-wider mb-1">Blood Pressure</div>
                   <div class="flex items-baseline gap-1">
-                    <span class="text-2xl font-bold text-slate-800">{{ latestMetric().systolicBP || '--' }}/{{ latestMetric().diastolicBP || '--' }}</span>
+                    <span class="text-2xl font-bold text-slate-800">{{ latestMetric()?.systolicBP || '--' }}/{{ latestMetric()?.diastolicBP || '--' }}</span>
                   </div>
                 </div>
                 <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
                   <div class="text-slate-500 text-xs font-medium uppercase tracking-wider mb-1">Steps</div>
                   <div class="flex items-baseline gap-1">
-                    <span class="text-2xl font-bold text-slate-800">{{ latestMetric().steps || '--' }}</span>
+                    <span class="text-2xl font-bold text-slate-800">{{ latestMetric()?.steps || '--' }}</span>
                   </div>
                 </div>
                 <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
                   <div class="text-slate-500 text-xs font-medium uppercase tracking-wider mb-1">Sleep</div>
                   <div class="flex items-baseline gap-1">
-                    <span class="text-2xl font-bold text-slate-800">{{ latestMetric().sleepHours || '--' }}</span>
+                    <span class="text-2xl font-bold text-slate-800">{{ latestMetric()?.sleepHours || '--' }}</span>
                     <span class="text-sm text-slate-500">hrs</span>
                   </div>
                 </div>
@@ -166,7 +166,7 @@ import { FormsModule } from '@angular/forms';
                   <div class="flex items-start justify-between mb-3">
                     <div>
                       <h3 class="font-medium text-slate-800">{{ appt.doctorName }}</h3>
-                      <p class="text-sm text-slate-500 capitalize">{{ appt.type.replace('_', ' ') }}</p>
+                      <p class="text-sm text-slate-500 capitalize">{{ appt.type?.replace('_', ' ') }}</p>
                     </div>
                     <div class="bg-white px-2 py-1 rounded text-xs font-medium text-slate-600 border border-slate-200 shadow-sm">
                       {{ appt.date | date:'MMM d' }}
@@ -228,7 +228,7 @@ export class DashboardComponent {
   upcomingAppointments = computed(() => {
     const now = new Date().toISOString();
     return this.dataService.appointments()
-      .filter(a => a.date >= now && a.status === 'scheduled')
+      .filter(a => a.date && a.date >= now && a.status === 'scheduled')
       .slice(0, 3);
   });
 

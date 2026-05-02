@@ -1,5 +1,5 @@
 import { Component, inject, signal, computed } from '@angular/core';
-import { DataService } from '../data.service';
+import { DataService, HealthRecord } from '../data.service';
 import { MatIconModule } from '@angular/material/icon';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -28,24 +28,24 @@ import { DomSanitizer } from '@angular/platform-browser';
             <h2 class="text-xl font-semibold mb-4 text-slate-800">Upload Record</h2>
             <div class="space-y-4">
               <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Title</label>
-                <input type="text" [(ngModel)]="newRecord.title" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="e.g. Annual Blood Test">
+                <label for="recordTitleInput" class="block text-sm font-medium text-slate-700 mb-1">Title</label>
+                <input id="recordTitleInput" type="text" [(ngModel)]="newRecord.title" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="e.g. Annual Blood Test">
               </div>
               <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Record Type</label>
-                <select [(ngModel)]="newRecord.type" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+                <label for="recordTypeSelect" class="block text-sm font-medium text-slate-700 mb-1">Record Type</label>
+                <select id="recordTypeSelect" [(ngModel)]="newRecord.type" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
                   <option value="lab_report">Lab Report</option>
                   <option value="prescription">Prescription</option>
                   <option value="doctor_note">Doctor Note</option>
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Date</label>
-                <input type="date" [(ngModel)]="newRecord.date" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <label for="recordDateInput" class="block text-sm font-medium text-slate-700 mb-1">Date</label>
+                <input id="recordDateInput" type="date" [(ngModel)]="newRecord.date" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
               </div>
               <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Upload File (Max 5MB)</label>
-                <input type="file" (change)="onFileSelected($event)" accept="image/*,.pdf" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+                <label for="recordFileInput" class="block text-sm font-medium text-slate-700 mb-1">Upload File (Max 500KB)</label>
+                <input id="recordFileInput" type="file" (change)="onFileSelected($event)" accept="image/*,.pdf" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
                 @if (fileError()) {
                   <p class="text-red-500 text-xs mt-1">{{ fileError() }}</p>
                 }
@@ -69,7 +69,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         @for (record of filteredRecords(); track record.id) {
-          <div (click)="viewingRecord.set(record)" class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 hover:shadow-md transition-shadow cursor-pointer group">
+          <button (click)="viewingRecord.set(record)" class="w-full text-left bg-white rounded-3xl p-5 shadow-sm border border-slate-100 hover:shadow-md transition-shadow cursor-pointer group">
             <div class="flex items-start justify-between mb-4">
               <div class="w-12 h-12 rounded-2xl flex items-center justify-center"
                    [class.bg-blue-50]="record.type === 'lab_report'" [class.text-blue-600]="record.type === 'lab_report'"
@@ -79,9 +79,9 @@ import { DomSanitizer } from '@angular/platform-browser';
                   {{ record.type === 'lab_report' ? 'science' : record.type === 'prescription' ? 'medication' : 'description' }}
                 </mat-icon>
               </div>
-              <button class="text-slate-400 hover:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div class="text-slate-400 hover:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity">
                 <mat-icon>more_vert</mat-icon>
-              </button>
+              </div>
             </div>
             
             <h3 class="font-semibold text-slate-800 mb-1 line-clamp-1">{{ record.title }}</h3>
@@ -89,13 +89,13 @@ import { DomSanitizer } from '@angular/platform-browser';
             
             <div class="flex items-center justify-between pt-4 border-t border-slate-100">
               <span class="text-xs font-medium px-2 py-1 rounded bg-slate-50 text-slate-500 uppercase tracking-wider">
-                {{ record.type.replace('_', ' ') }}
+                {{ String(record.type).replace('_', ' ') }}
               </span>
-              <button class="text-emerald-600 hover:bg-emerald-50 p-1.5 rounded-lg transition-colors">
+              <div class="text-emerald-600 hover:bg-emerald-50 p-1.5 rounded-lg transition-colors inline-block">
                 <mat-icon class="text-[20px] w-5 h-5 flex items-center justify-center">download</mat-icon>
-              </button>
+              </div>
             </div>
-          </div>
+          </button>
         } @empty {
           <div class="col-span-full text-center py-12 bg-white rounded-3xl border border-slate-100 border-dashed">
             <div class="w-16 h-16 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -111,17 +111,17 @@ import { DomSanitizer } from '@angular/platform-browser';
         <div class="fixed inset-0 bg-slate-900/80 flex items-center justify-center z-50 p-4">
           <div class="bg-white rounded-3xl p-6 w-full max-w-3xl shadow-xl flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-center mb-4">
-              <h2 class="text-xl font-semibold text-slate-800">{{ viewingRecord().title }}</h2>
+              <h2 class="text-xl font-semibold text-slate-800">{{ viewingRecord()?.title }}</h2>
               <button (click)="viewingRecord.set(null)" class="text-slate-400 hover:text-slate-600 cursor-pointer">
                 <mat-icon>close</mat-icon>
               </button>
             </div>
             <div class="flex-1 overflow-auto bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-center p-4">
-              @if (viewingRecord().fileUrl) {
-                @if (viewingRecord().fileUrl.startsWith('data:image')) {
-                  <img [src]="viewingRecord().fileUrl" class="max-w-full max-h-full object-contain rounded-lg">
-                } @else if (viewingRecord().fileUrl.startsWith('data:application/pdf')) {
-                  <iframe [src]="getSafeUrl(viewingRecord().fileUrl)" class="w-full h-[60vh] rounded-lg"></iframe>
+              @if (viewingRecord()?.fileUrl) {
+                @if (viewingRecord()?.fileUrl?.startsWith('data:image')) {
+                  <img [src]="viewingRecord()?.fileUrl" alt="Medical Record" class="max-w-full max-h-full object-contain rounded-lg">
+                } @else if (viewingRecord()?.fileUrl?.startsWith('data:application/pdf')) {
+                  <iframe [src]="getSafeUrl(viewingRecord()?.fileUrl || '')" class="w-full h-[60vh] rounded-lg"></iframe>
                 } @else {
                   <p class="text-slate-500">Preview not available for this file type.</p>
                 }
@@ -148,7 +148,9 @@ export class RecordsComponent {
   selectedFile = signal<File | null>(null);
   fileDataUrl = signal<string | null>(null);
   fileError = signal<string | null>(null);
-  viewingRecord = signal<any>(null);
+  viewingRecord = signal<HealthRecord | null>(null);
+
+  String = String;
 
   newRecord = {
     title: '',
@@ -167,8 +169,9 @@ export class RecordsComponent {
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
     if (!file) {
       this.selectedFile.set(null);
       this.fileDataUrl.set(null);
@@ -206,7 +209,7 @@ export class RecordsComponent {
     await this.dataService.addRecord({
       userId,
       title: this.newRecord.title,
-      type: this.newRecord.type as any,
+      type: this.newRecord.type as string,
       date: new Date(this.newRecord.date).toISOString(),
       fileUrl: fileUrl
     });
